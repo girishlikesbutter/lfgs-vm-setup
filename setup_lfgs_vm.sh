@@ -462,6 +462,38 @@ EOF
 print_success "Quick start guide created"
 
 # ============================================================================
+# Step 7: Copy and Configure Validation Script
+# ============================================================================
+print_status "Step 7: Setting up validation script..."
+
+# Copy validation script from LFG-S repository
+if [ -f "LFG-S/scripts/setup/validate_setup.sh" ]; then
+    print_status "Copying validation script from repository..."
+    cp LFG-S/scripts/setup/validate_setup.sh ./validate_setup.sh
+    chmod +x ./validate_setup.sh
+    
+    # Fix paths in validation script to work from parent directory
+    print_status "Fixing paths in validation script..."
+    sed -i 's|if \[ -f "\.github_token" \]|if [ -f ".github_token" ]|g' ./validate_setup.sh
+    sed -i 's|if \[ -d "\.git" \]|if [ -d "LFG-S/.git" ]|g' ./validate_setup.sh
+    sed -i 's|if \[ -d "venv" \]|if [ -d "LFG-S/venv" ]|g' ./validate_setup.sh
+    sed -i 's|source venv/bin/activate|source LFG-S/venv/bin/activate|g' ./validate_setup.sh
+    sed -i 's|if \[ -d "\$dir" \]|if [ -d "LFG-S/$dir" ]|g' ./validate_setup.sh
+    sed -i 's|if \[ -f "\$file" \]|if [ -f "LFG-S/$file" ]|g' ./validate_setup.sh
+    sed -i 's|if \[ -d "data/kernels" \]|if [ -d "LFG-S/data/kernels" ]|g' ./validate_setup.sh
+    sed -i 's|if \[ -f "data/kernels/metakernel.tm" \]|if [ -f "LFG-S/data/kernels/metakernel.tm" ]|g' ./validate_setup.sh
+    sed -i 's|if \[ -d "data/models" \]|if [ -d "LFG-S/data/models" ]|g' ./validate_setup.sh
+    sed -i 's|1\. source venv/bin/activate|1. cd LFG-S|g' ./validate_setup.sh
+    sed -i 's|2\. claude|2. source venv/bin/activate|g' ./validate_setup.sh
+    sed -i 's|3\. Tell Claude|3. claude|g' ./validate_setup.sh
+    sed -i '/3\. claude/a\    echo "  4. Tell Claude to read CLAUDE_CONTEXT.md and docs/PRD.md"' ./validate_setup.sh
+    
+    print_success "Validation script configured"
+else
+    print_warning "Validation script not found in repository"
+fi
+
+# ============================================================================
 # Final Steps and Summary
 # ============================================================================
 print_status "Step 8: Final validation and summary..."
